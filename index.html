@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TICKORA — Time, worn well.</title>
+<meta name="description" content="TICKORA — everyday watches, engineered right. Japanese quartz, sapphire-coated crystal, 24-month warranty.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20fill='%2314181D'/%3E%3Ccircle%20cx='32'%20cy='32'%20r='26'%20fill='none'%20stroke='%23BC8A54'%20stroke-width='3'/%3E%3Ccircle%20cx='32'%20cy='32'%20r='20'%20fill='none'%20stroke='%23BC8A54'%20stroke-width='1'/%3E%3Ctext%20x='32'%20y='40'%20font-family='Georgia,serif'%20font-size='23'%20font-weight='700'%20fill='%23D4A876'%20text-anchor='middle'%3ETC%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14181D; --panel:#1C232B; --panel-light:#232B34;
+  --brass:#BC8A54; --brass-light:#D4A876; --sage:#7C9C87;
+  --bone:#EDE6D8; --bone-dim:#8E8879;
+  --border:rgba(237,230,216,0.1);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--ink); color:var(--bone);
+  font-family:'Manrope',sans-serif; line-height:1.6;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif; font-weight:600; line-height:1.15; letter-spacing:-0.01em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+a{color:inherit; text-decoration:none;}
+img,svg{display:block; max-width:100%;}
+.container{max-width:1180px; margin:0 auto; padding:0 32px;}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.14em;
+  text-transform:uppercase; color:var(--sage); margin-bottom:14px; display:inline-block;
+}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:14px 28px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px;
+  border:1px solid transparent; cursor:pointer; transition:all .2s ease; white-space:nowrap;
+}
+.btn-primary{background:var(--brass); color:var(--ink);}
+.btn-primary:hover{background:var(--brass-light);}
+.btn-ghost{background:transparent; border-color:var(--border); color:var(--bone);}
+.btn-ghost:hover{border-color:var(--brass); color:var(--brass-light);}
+section{padding:110px 0;}
+@media(max-width:900px){section{padding:72px 0;}}
+
+/* ---------- NAV ---------- */
+nav{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  padding:22px 0; transition:all .3s ease; border-bottom:1px solid transparent;
+}
+nav.scrolled{
+  background:rgba(20,24,29,0.86); backdrop-filter:blur(14px);
+  border-bottom-color:var(--border); padding:14px 0;
+}
+.nav-inner{display:flex; align-items:center; justify-content:space-between;}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand svg{width:36px; height:36px;}
+.brand-word{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:19px; letter-spacing:0.04em;}
+.nav-links{display:flex; align-items:center; gap:36px;}
+.nav-links a:not(.btn){
+  font-size:14px; font-weight:500; color:var(--bone-dim); transition:color .2s;
+}
+.nav-links a:not(.btn):hover{color:var(--brass-light);}
+.hamburger{display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px;}
+.hamburger span{width:24px; height:2px; background:var(--bone);}
+@media(max-width:900px){
+  .nav-links{
+    position:fixed; top:0; right:-100%; width:78%; max-width:320px; height:100vh;
+    background:var(--panel); flex-direction:column; align-items:flex-start;
+    padding:100px 32px; gap:26px; transition:right .3s ease; border-left:1px solid var(--border);
+  }
+  .nav-links.open{right:0;}
+  .hamburger{display:flex;}
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  position:relative; min-height:100vh; display:flex; align-items:center;
+  padding-top:120px; overflow:hidden;
+}
+.hero-bg{position:absolute; inset:0; z-index:0; pointer-events:none;}
+.floating-thumb{
+  position:absolute; border-radius:50%; border:1.5px solid var(--brass);
+  opacity:0.38; overflow:hidden; animation:drift 8s ease-in-out infinite;
+}
+.floating-thumb svg{width:100%; height:100%;}
+@keyframes drift{
+  0%,100%{transform:translate(0,0) rotate(0deg);}
+  50%{transform:translate(-14px,18px) rotate(8deg);}
+}
+@media(prefers-reduced-motion:reduce){.floating-thumb{animation:none;}}
+
+.hero-grid{
+  position:relative; z-index:1; display:grid; grid-template-columns:1.15fr 0.85fr;
+  gap:60px; align-items:center;
+}
+.hero h1{font-size:clamp(40px,5.2vw,68px); margin-bottom:22px;}
+.hero h1 .accent{color:var(--brass);}
+.hero p{font-size:17px; color:var(--bone-dim); max-width:520px; margin-bottom:36px;}
+.hero-ctas{display:flex; gap:16px; flex-wrap:wrap;}
+
+/* live watch face */
+.watch-wrap{display:flex; justify-content:center;}
+.watch-face{
+  position:relative; width:340px; height:340px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--panel-light), var(--panel) 70%);
+  border:2px solid var(--brass); box-shadow:0 0 0 8px rgba(20,24,29,0.6), 0 30px 60px rgba(0,0,0,0.5);
+}
+.tick{position:absolute; left:50%; top:50%; background:var(--bone-dim); transform-origin:0 170px;}
+.tick.major{background:var(--brass-light); width:3px; height:14px;}
+.tick.minor{width:1px; height:7px;}
+.hand{position:absolute; left:50%; top:50%; transform-origin:50% 100%; background:var(--bone); border-radius:2px;}
+.hand-hour{width:6px; height:86px; margin-left:-3px; margin-top:-86px; background:var(--brass-light);}
+.hand-min{width:4px; height:120px; margin-left:-2px; margin-top:-120px; background:var(--bone);}
+.hand-sec{width:2px; height:132px; margin-left:-1px; margin-top:-132px; background:var(--sage); transition:transform .15s cubic-bezier(.4,2.2,.6,1);}
+@media(prefers-reduced-motion:reduce){.hand-sec{transition:none;}}
+.watch-center{position:absolute; left:50%; top:50%; width:12px; height:12px; margin:-6px; border-radius:50%; background:var(--brass);}
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr; text-align:center;}
+  .hero p{margin-left:auto; margin-right:auto;}
+  .hero-ctas{justify-content:center;}
+  .watch-face{width:260px; height:260px;}
+  .tick{transform-origin:0 130px;}
+  .hand-hour{height:64px; margin-top:-64px;}
+  .hand-min{height:92px; margin-top:-92px;}
+  .hand-sec{height:100px; margin-top:-100px;}
+}
+
+/* ---------- MARQUEE ---------- */
+.marquee-wrap{
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+  background:var(--panel); overflow:hidden; white-space:nowrap; padding:18px 0;
+}
+.marquee-track{display:inline-flex; animation:scroll 26s linear infinite;}
+.marquee-track span{
+  font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.08em;
+  color:var(--brass-light); padding:0 28px; display:inline-flex; align-items:center; gap:28px;
+}
+@keyframes scroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+@media(prefers-reduced-motion:reduce){.marquee-track{animation:none;}}
+
+/* ---------- SHOP ---------- */
+.section-head{max-width:600px; margin-bottom:56px;}
+.section-head h2{font-size:clamp(28px,3.4vw,40px);}
+.section-head p{color:var(--bone-dim); margin-top:14px; font-size:16px;}
+.shop-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+.product-card{
+  background:var(--panel); border:1px solid var(--border); position:relative;
+  display:flex; flex-direction:column; transition:border-color .25s;
+}
+.product-card:hover{border-color:var(--brass);}
+.product-media{aspect-ratio:1/1; background:var(--panel-light); display:flex; align-items:center; justify-content:center; padding:22px; position:relative;}
+.product-tag{
+  position:absolute; top:14px; left:14px; background:var(--brass); color:var(--ink);
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:500; letter-spacing:0.08em;
+  padding:5px 10px; text-transform:uppercase;
+}
+.product-body{padding:22px; display:flex; flex-direction:column; gap:6px; flex:1;}
+.product-body h3{font-size:19px;}
+.product-body p{color:var(--bone-dim); font-size:14px; flex:1;}
+.product-footer{display:flex; align-items:center; justify-content:space-between; margin-top:14px;}
+.price{font-family:'IBM Plex Mono',monospace; font-size:16px; color:var(--brass-light);}
+.add-btn{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.04em; font-weight:500;
+  padding:10px 16px; background:transparent; border:1px solid var(--brass); color:var(--brass-light);
+  cursor:pointer; transition:all .2s; min-width:126px; text-align:center;
+}
+.add-btn:hover{background:var(--brass); color:var(--ink);}
+.add-btn.added{background:var(--sage); border-color:var(--sage); color:var(--ink);}
+@media(max-width:900px){.shop-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.shop-grid{grid-template-columns:1fr;}}
+
+/* ---------- STORY / LEADERSHIP ---------- */
+.split{display:grid; grid-template-columns:0.9fr 1.1fr; gap:64px; align-items:center;}
+.split.reverse{grid-template-columns:1.1fr 0.9fr;}
+.split.reverse .split-media{order:2;}
+.split-media{position:relative;}
+.split-media .frame{
+  aspect-ratio:4/5; background:var(--panel-light); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;
+}
+.frame-caption{
+  position:absolute; bottom:0; left:0; right:0; padding:16px 18px;
+  background:linear-gradient(to top, rgba(20,24,29,0.92), transparent);
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; color:var(--brass-light);
+}
+.split-text h2{font-size:clamp(26px,3.2vw,36px); margin-bottom:20px;}
+.split-text p{color:var(--bone-dim); margin-bottom:16px; font-size:15.5px;}
+.pull-quote{
+  border-left:2px solid var(--brass); padding-left:20px; margin:26px 0; font-family:'Space Grotesk',sans-serif;
+  font-size:18px; color:var(--bone); font-style:italic;
+}
+.pull-quote cite{display:block; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:12px;
+  font-style:normal; color:var(--bone-dim); letter-spacing:0.04em;}
+@media(max-width:900px){
+  .split, .split.reverse{grid-template-columns:1fr; gap:32px;}
+  .split.reverse .split-media{order:0;}
+}
+
+/* ---------- WHY / SPECS ---------- */
+.specs-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border); border:1px solid var(--border);}
+.spec-cell{background:var(--ink); padding:38px 32px;}
+.spec-cell .num{font-family:'IBM Plex Mono',monospace; color:var(--brass); font-size:13px; letter-spacing:0.08em;}
+.spec-cell h3{font-size:20px; margin:14px 0 8px;}
+.spec-cell .headline{color:var(--brass-light); font-weight:600; font-size:15px; margin-bottom:10px;}
+.spec-cell p{color:var(--bone-dim); font-size:14.5px;}
+@media(max-width:900px){.specs-grid{grid-template-columns:1fr;}}
+
+/* ---------- FOOTER ---------- */
+footer{background:var(--panel); border-top:1px solid var(--border); padding-top:80px;}
+.newsletter{
+  background:var(--panel-light); border:1px solid var(--border); padding:44px;
+  display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; margin-bottom:70px;
+}
+.newsletter h3{font-size:22px; margin-bottom:6px;}
+.newsletter p{color:var(--bone-dim); font-size:14px;}
+.newsletter-form{display:flex; gap:10px; flex-wrap:wrap;}
+.newsletter-form input{
+  background:var(--ink); border:1px solid var(--border); color:var(--bone); padding:13px 16px;
+  font-family:'Manrope',sans-serif; font-size:14px; min-width:240px;
+}
+.newsletter-form input:focus{outline:none; border-color:var(--brass);}
+.newsletter-msg{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--sage); margin-top:10px; display:none;}
+.footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:40px; padding-bottom:56px;}
+.footer-col h4{font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:var(--bone-dim); margin-bottom:18px; font-family:'IBM Plex Mono',monospace; font-weight:500;}
+.footer-col p{color:var(--bone-dim); font-size:14px; max-width:260px;}
+.footer-col a{display:block; color:var(--bone-dim); font-size:14px; margin-bottom:12px; transition:color .2s;}
+.footer-col a:hover{color:var(--brass-light);}
+.footer-bottom{
+  border-top:1px solid var(--border); padding:24px 0; display:flex; align-items:center;
+  justify-content:space-between; flex-wrap:wrap; gap:16px;
+}
+.footer-bottom p{font-size:13px; color:var(--bone-dim);}
+.socials{display:flex; gap:18px;}
+.socials a{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--bone-dim);}
+.socials a:hover{color:var(--brass-light);}
+@media(max-width:900px){
+  .footer-grid{grid-template-columns:1fr 1fr; gap:32px;}
+  .newsletter{flex-direction:column; align-items:flex-start;}
+}
+@media(max-width:560px){.footer-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="container nav-inner">
+    <a href="#top" class="brand">
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="var(--panel)" stroke="var(--brass)" stroke-width="1.5"/>
+        <circle cx="32" cy="32" r="24" fill="none" stroke="var(--brass)" stroke-width="1"/>
+        <g id="gear-teeth"></g>
+        <line x1="32" y1="10" x2="32" y2="15" stroke="var(--brass-light)" stroke-width="1.5"/>
+        <line x1="32" y1="49" x2="32" y2="54" stroke="var(--brass-light)" stroke-width="1.5"/>
+        <line x1="10" y1="32" x2="15" y2="32" stroke="var(--brass-light)" stroke-width="1.5"/>
+        <line x1="49" y1="32" x2="54" y2="32" stroke="var(--brass-light)" stroke-width="1.5"/>
+        <text x="32" y="40" font-family="Georgia,serif" font-size="21" font-weight="700" fill="var(--brass-light)" text-anchor="middle">TC</text>
+      </svg>
+      <span class="brand-word">TICKORA</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#shop">Shop</a>
+      <a href="#story">Story</a>
+      <a href="#leadership">Leadership</a>
+      <a href="#why">Details</a>
+      <a href="#contact">Contact</a>
+      <a href="#shop" class="btn btn-primary">Shop Now</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">TICKORA — Everyday Watches</span>
+      <h1>Time, worn <span class="accent">well.</span></h1>
+      <p>No case full of complications you'll never use. Just a well-built watch for the version of your day that actually happens — meetings, gym, dinner, repeat.</p>
+      <div class="hero-ctas">
+        <a href="#shop" class="btn btn-primary">Shop the collection</a>
+        <a href="#story" class="btn btn-ghost">Our story</a>
+      </div>
+    </div>
+    <div class="watch-wrap">
+      <div class="watch-face" id="watchFace">
+        <div class="hand hand-hour" id="hourHand"></div>
+        <div class="hand hand-min" id="minHand"></div>
+        <div class="hand hand-sec" id="secHand"></div>
+        <div class="watch-center"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack"></div>
+</div>
+
+<section id="shop">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">The Collection</span>
+      <h2>Six watches. Zero clutter.</h2>
+      <p>Every model runs the same reliable core — sapphire-coated crystal, 5ATM water resistance, a movement that just works.</p>
+    </div>
+    <div class="shop-grid" id="shopGrid"></div>
+  </div>
+</section>
+
+<section id="story">
+  <div class="container split">
+    <div class="split-media">
+      <div class="frame" id="storyFrame"></div>
+    </div>
+    <div class="split-text">
+      <span class="eyebrow">Why We Started</span>
+      <h2>We got tired of the collector talk.</h2>
+      <p>Most watch brands sell you a hobby — limited drops, complications you'll never touch, a case full of pieces you rotate through for no reason but the algorithm. That's not what most people actually want from a watch.</p>
+      <p>TICKORA sells one reliable watch for the day you actually have: the commute, the gym, dinner after. Built on dependable movements, honest materials, and fair pricing — no hype drops, no waitlists, just a good watch you can put on and forget about.</p>
+    </div>
+  </div>
+</section>
+
+<section id="leadership">
+  <div class="container split reverse">
+    <div class="split-media">
+      <div class="frame" id="leaderFrame">
+        <div class="frame-caption">FOUNDER &amp; CEO — Eng. Esam Hesham</div>
+      </div>
+    </div>
+    <div class="split-text">
+      <span class="eyebrow">The Engineer Behind The Brand</span>
+      <h2>Built by someone who reads spec sheets for fun.</h2>
+      <p>Eng. Esam Hesham is a mechatronics engineering graduate who spent years working as an electrical engineer across several companies in the UAE before founding TICKORA. That background shows up in how the brand thinks about product — tolerances, materials, and failure modes first, aesthetics second.</p>
+      <p>The philosophy is simple: a watch is a piece of engineering before it's an accessory. Every TICKORA model is chosen and specced with that discipline — reliable movements, tested water resistance, and components that hold up to an actual daily routine.</p>
+      <div class="pull-quote">
+        "I didn't set out to build another watch brand. I set out to build one that was engineered right."
+        <cite>— Esam Hesham, Founder &amp; CEO</cite>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">What's Actually Inside</span>
+      <h2>The spec sheet, not the sales pitch.</h2>
+    </div>
+    <div class="specs-grid">
+      <div class="spec-cell">
+        <span class="num">01 — CASE</span>
+        <h3>40mm Stainless Steel</h3>
+        <div class="headline">Slim by design</div>
+        <p>Thin enough to slide under a shirt cuff, solid enough that you forget it's an accessory.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="num">02 — MOVEMENT</span>
+        <h3>Japanese Quartz</h3>
+        <div class="headline">Accurate, no fuss</div>
+        <p>No winding, no charging, no app. It keeps time so you don't have to think about it.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="num">03 — WARRANTY</span>
+        <h3>24 Months</h3>
+        <div class="headline">Buy once</div>
+        <p>Full replacement movement warranty, backed locally across the UAE.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="container">
+    <div class="newsletter">
+      <div>
+        <h3>Get 10% off your first watch</h3>
+        <p>One email when we launch something new. No spam, unsubscribe anytime.</p>
+        <p class="newsletter-msg" id="newsletterMsg">You're in — check your inbox for the code.</p>
+      </div>
+      <form class="newsletter-form" id="newsletterForm">
+        <input type="email" placeholder="you@email.com" required id="newsletterEmail">
+        <button type="submit" class="btn btn-primary">Notify me</button>
+      </form>
+    </div>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Tickora</h4>
+        <p>Everyday watches, engineered right. Reliable movements, honest materials, fair pricing — one good watch instead of a case full of them.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Shop</h4>
+        <a href="#shop">All watches</a>
+        <a href="#shop">Best sellers</a>
+        <a href="#shop">New arrivals</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="#why">Warranty</a>
+        <a href="#contact">Contact us</a>
+        <a href="#contact">Shipping &amp; returns</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#story">Our story</a>
+        <a href="#leadership">Leadership</a>
+        <a href="#contact">Careers</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 TICKORA. All rights reserved.</p>
+      <div class="socials">
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+        <a href="#">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- nav gear teeth ---------- */
+(function(){
+  const g = document.getElementById('gear-teeth');
+  let teeth = '';
+  for(let i=0;i<12;i++){
+    const a = i*30;
+    teeth += `<rect x="30.5" y="1" width="3" height="6" fill="var(--brass)" transform="rotate(${a} 32 32)"/>`;
+  }
+  g.innerHTML = teeth;
+})();
+
+/* ---------- nav scroll + mobile menu ---------- */
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  navEl.classList.toggle('scrolled', window.scrollY > 40);
+});
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+/* ---------- watch SVG generator (used for products + floating thumbs) ---------- */
+function watchSVG(opt, uid){
+  const cx=100, cy=100;
+  let markers = '';
+  for(let i=0;i<12;i++){
+    const angle = (i*30 - 90) * Math.PI/180;
+    const x1 = cx + Math.cos(angle)*64, y1 = cy + Math.sin(angle)*64;
+    const x2 = cx + Math.cos(angle)*56, y2 = cy + Math.sin(angle)*56;
+    if(opt.style === 'classic' && [0,3,6,9].includes(i)){
+      const rn = {0:'XII',3:'III',6:'VI',9:'IX'}[i];
+      const tx = cx + Math.cos(angle)*48, ty = cy + Math.sin(angle)*48 + 4;
+      markers += `<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-family="Georgia,serif" font-size="11" fill="${opt.hands}" text-anchor="middle">${rn}</text>`;
+    } else {
+      markers += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${opt.hands}" stroke-width="${i%3===0?2.6:1.2}"/>`;
+    }
+  }
+  let extra = '';
+  if(opt.style === 'moonphase'){
+    let stars = '';
+    for(let s=0;s<3;s++) stars += `<circle cx="${92+s*8}" cy="132" r="0.9" fill="${opt.hands}"/>`;
+    extra = `<circle cx="100" cy="138" r="15" fill="${opt.case_}" stroke="${opt.hands}" stroke-width="0.75"/>
+      <path d="M 95 130 A 8 8 0 1 0 95 146 A 6 6 0 1 1 95 130 Z" fill="${opt.hands}"/>${stars}`;
+  } else if(opt.style === 'openheart'){
+    let teeth='';
+    for(let i=0;i<8;i++){
+      const a=(i*45)*Math.PI/180;
+      teeth += `<line x1="${(100+Math.cos(a)*9).toFixed(1)}" y1="${(126+Math.sin(a)*9).toFixed(1)}" x2="${(100+Math.cos(a)*12).toFixed(1)}" y2="${(126+Math.sin(a)*12).toFixed(1)}" stroke="${opt.brass}" stroke-width="1.3"/>`;
+    }
+    extra = `<circle cx="100" cy="126" r="14" fill="${opt.ink}" stroke="${opt.brass}" stroke-width="1"/>
+      <circle cx="100" cy="126" r="5" fill="none" stroke="${opt.brass}" stroke-width="1"/>${teeth}`;
+  }
+  return `
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="dial-${uid}" cx="35%" cy="30%" r="75%">
+        <stop offset="0%" stop-color="${opt.dial2}"/>
+        <stop offset="100%" stop-color="${opt.dial}"/>
+      </radialGradient>
+    </defs>
+    <rect x="90" y="0" width="20" height="16" rx="4" fill="${opt.strap}"/>
+    <rect x="90" y="184" width="20" height="16" rx="4" fill="${opt.strap}"/>
+    <circle cx="100" cy="100" r="88" fill="${opt.case_}" stroke="${opt.caseStroke}" stroke-width="1.5"/>
+    <rect x="176" y="92" width="9" height="16" rx="2" fill="${opt.case_}" stroke="${opt.caseStroke}" stroke-width="1"/>
+    <circle cx="100" cy="100" r="76" fill="url(#dial-${uid})" stroke="${opt.brass}" stroke-width="2"/>
+    ${markers}
+    ${extra}
+    <line x1="100" y1="100" x2="100" y2="62" stroke="${opt.brass}" stroke-width="4" stroke-linecap="round" transform="rotate(45 100 100)"/>
+    <line x1="100" y1="100" x2="100" y2="46" stroke="${opt.hands}" stroke-width="2.5" stroke-linecap="round" transform="rotate(160 100 100)"/>
+    <circle cx="100" cy="100" r="4.5" fill="${opt.brass}"/>
+  </svg>`;
+}
+
+const inkC = '#14181D';
+const brassC = '#BC8A54';
+
+const products = [
+  {id:1, name:'Emerald Openheart', tag:'Best Seller', desc:'Green sunburst dial, open-heart movement, cognac leather.', price:'AED 349',
+    art:{dial:'#1c3a2c', dial2:'#2f5b45', case_:'#3a3f47', caseStroke:'#565d67', hands:'#EDE6D8', strap:'#8a5a35', brass:brassC, ink:inkC, style:'openheart'}},
+  {id:2, name:'Twilight Moonphase', tag:'', desc:'Two-tone case, moonphase complication, navy alligator strap.', price:'AED 389',
+    art:{dial:'#141d33', dial2:'#233257', case_:'#8a7148', caseStroke:'#5f4f34', hands:'#EDE6D8', strap:'#1b2436', brass:brassC, ink:inkC, style:'moonphase'}},
+  {id:3, name:'Sapphire Moonphase', tag:'New', desc:'Steel-and-gold case, deep blue dial, moonphase sub-dial.', price:'AED 389',
+    art:{dial:'#0f2140', dial2:'#1c3f72', case_:'#6f7580', caseStroke:'#4a4f57', hands:'#EDE6D8', strap:'#2a2f38', brass:brassC, ink:inkC, style:'moonphase'}},
+  {id:4, name:'Emerald Moonphase', tag:'', desc:'Rose gold case, green dial, moonphase, brown leather.', price:'AED 399',
+    art:{dial:'#17301f', dial2:'#295c39', case_:'#a9805f', caseStroke:'#7a5b41', hands:'#EDE6D8', strap:'#5c3b25', brass:brassC, ink:inkC, style:'moonphase'}},
+  {id:5, name:'Ocean Moonphase', tag:'Limited', desc:'Rose gold case, blue dial, moonphase, textured leather strap.', price:'AED 399',
+    art:{dial:'#0e2e4a', dial2:'#1d5480', case_:'#a9805f', caseStroke:'#7a5b41', hands:'#EDE6D8', strap:'#3d2a1c', brass:brassC, ink:inkC, style:'moonphase'}},
+  {id:6, name:'Ivory Classic', tag:'', desc:'Roman numeral dial, gold hands, brown leather, dress-watch build.', price:'AED 299',
+    art:{dial:'#e6ddc8', dial2:'#f2ece0', case_:'#c9a857', caseStroke:'#8f7638', hands:'#3a2f22', strap:'#4a3323', brass:brassC, ink:inkC, style:'classic'}},
+];
+
+const shopGrid = document.getElementById('shopGrid');
+products.forEach(p => {
+  const card = document.createElement('div');
+  card.className = 'product-card';
+  card.innerHTML = `
+    <div class="product-media">
+      ${p.tag ? `<span class="product-tag">${p.tag}</span>` : ''}
+      ${watchSVG(p.art, 'p'+p.id)}
+    </div>
+    <div class="product-body">
+      <h3>${p.name}</h3>
+      <p>${p.desc}</p>
+      <div class="product-footer">
+        <span class="price mono">${p.price}</span>
+        <button class="add-btn" data-id="${p.id}">Add to cart</button>
+      </div>
+    </div>`;
+  shopGrid.appendChild(card);
+});
+shopGrid.addEventListener('click', e => {
+  if(!e.target.classList.contains('add-btn')) return;
+  const btn = e.target;
+  if(btn.classList.contains('added')) return;
+  btn.classList.add('added');
+  const original = btn.textContent;
+  btn.textContent = 'Added ✓';
+  setTimeout(() => { btn.classList.remove('added'); btn.textContent = original; }, 2000);
+});
+
+/* ---------- story / leadership media placeholders ---------- */
+document.getElementById('storyFrame').innerHTML = watchSVG(
+  {dial:'#1c3a2c', dial2:'#2f5b45', case_:'#3a3f47', caseStroke:'#565d67', hands:'#EDE6D8', strap:'#8a5a35', brass:brassC, ink:inkC, style:'openheart'}, 'story');
+document.getElementById('storyFrame').querySelector('svg').style.transform = 'scale(1.9)';
+document.getElementById('storyFrame').style.overflow = 'hidden';
+
+document.getElementById('leaderFrame').insertAdjacentHTML('afterbegin', `
+  <svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" style="width:70%;">
+    <circle cx="100" cy="90" r="52" fill="#2a323c"/>
+    <circle cx="100" cy="78" r="26" fill="#3a4450"/>
+    <path d="M 55 175 Q 100 130 145 175 L 145 250 L 55 250 Z" fill="#232B34"/>
+    <rect x="70" y="205" width="60" height="16" fill="none" stroke="${brassC}" stroke-width="1"/>
+    <text x="100" y="216" font-family="IBM Plex Mono, monospace" font-size="8" fill="${brassC}" text-anchor="middle">CEO — E. HESHAM</text>
+  </svg>`);
+
+/* ---------- marquee ---------- */
+const specs = ['JAPANESE QUARTZ MOVEMENT','5ATM WATER RESISTANT','SAPPHIRE-COATED CRYSTAL','24-MONTH WARRANTY','FREE UAE SHIPPING'];
+const marqueeTrack = document.getElementById('marqueeTrack');
+function buildMarqueeSet(){
+  return specs.map(s => `<span>${s} <span style="color:var(--sage)">&#9679;</span></span>`).join('');
+}
+marqueeTrack.innerHTML = buildMarqueeSet() + buildMarqueeSet();
+
+/* ---------- floating hero thumbnails ---------- */
+const heroBg = document.getElementById('heroBg');
+const thumbConfigs = [
+  {top:'8%', left:'2%', size:110, dur:9, delay:0},
+  {top:'62%', left:'6%', size:80, dur:7, delay:1.2},
+  {top:'4%', left:'80%', size:96, dur:8, delay:0.6},
+  {top:'70%', left:'86%', size:120, dur:9, delay:1.8},
+  {top:'38%', left:'92%', size:70, dur:6, delay:0.3},
+  {top:'86%', left:'40%', size:88, dur:7.5, delay:2.1},
+];
+thumbConfigs.forEach((c, i) => {
+  const p = products[i % products.length];
+  const div = document.createElement('div');
+  div.className = 'floating-thumb';
+  div.style.cssText = `top:${c.top}; left:${c.left}; width:${c.size}px; height:${c.size}px; animation-duration:${c.dur}s; animation-delay:${c.delay}s;`;
+  div.innerHTML = watchSVG(p.art, 'float'+i);
+  heroBg.appendChild(div);
+});
+
+/* ---------- live analog watch ---------- */
+const watchFace = document.getElementById('watchFace');
+for(let i=0;i<60;i++){
+  const t = document.createElement('div');
+  t.className = 'tick ' + (i % 5 === 0 ? 'major' : 'minor');
+  t.style.transform = `rotate(${i*6}deg)`;
+  watchFace.appendChild(t);
+}
+const hourHand = document.getElementById('hourHand');
+const minHand = document.getElementById('minHand');
+const secHand = document.getElementById('secHand');
+function tickClock(){
+  const now = new Date();
+  const h = now.getHours() % 12, m = now.getMinutes(), s = now.getSeconds();
+  const hourDeg = h*30 + m*0.5;
+  const minDeg = m*6 + s*0.1;
+  const secDeg = s*6;
+  hourHand.style.transform = `rotate(${hourDeg}deg)`;
+  minHand.style.transform = `rotate(${minDeg}deg)`;
+  secHand.style.transform = `rotate(${secDeg}deg)`;
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+/* ---------- newsletter ---------- */
+document.getElementById('newsletterForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  document.getElementById('newsletterMsg').style.display = 'block';
+  document.getElementById('newsletterEmail').value = '';
+});
+</script>
+</body>
+</html>
