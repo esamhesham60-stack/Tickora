@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TICKORA — Admin</title>
+<link rel="icon" type="image/png" id="favicon" href="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/tickora.css">
+<style>
+.admin-section{padding:150px 0 100px;}
+.admin-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; flex-wrap:wrap; gap:16px;}
+.admin-head h1{font-size:clamp(26px,3vw,34px);}
+.admin-logout{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--bone-dim); background:none; border:1px solid var(--border); padding:10px 18px; cursor:pointer; transition:all .2s;}
+.admin-logout:hover{border-color:var(--brass); color:var(--brass-light);}
+.stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:56px;}
+.stat-cell{background:var(--panel); padding:26px 24px;}
+.stat-cell .label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--bone-dim); margin-bottom:10px;}
+.stat-cell .value{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:32px; color:var(--brass-light);}
+.admin-panel{margin-bottom:56px;}
+.admin-panel h2{font-size:18px; margin-bottom:18px;}
+.admin-table{width:100%; border-collapse:collapse; font-size:13.5px;}
+.admin-table th{
+  text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.05em; text-transform:uppercase;
+  color:var(--bone-dim); padding:10px 14px; border-bottom:1px solid var(--border);
+}
+.admin-table td{padding:12px 14px; border-bottom:1px solid var(--border); color:var(--bone-dim);}
+.admin-table tr:hover td{background:var(--panel-light);}
+.admin-table .num{font-family:'IBM Plex Mono',monospace; color:var(--brass-light);}
+.admin-table-wrap{overflow-x:auto; border:1px solid var(--border);}
+.admin-empty{padding:40px; text-align:center; color:var(--bone-dim); font-size:14px;}
+.admin-gate{min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:24px;}
+.admin-gate p{color:var(--bone-dim); font-size:15px;}
+@media(max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.stat-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div id="gate" class="admin-gate">
+  <p>Checking access…</p>
+</div>
+
+<div id="adminContent" style="display:none;">
+<nav id="nav">
+  <div class="container nav-inner">
+    <a href="index.html#top" class="brand">
+      <img src="" alt="TICKORA" class="logo-mark" id="navLogoImg">
+      <span class="brand-word">TICKORA</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#shop">Shop</a>
+      <a href="index.html#story">Story</a>
+      <a href="index.html#leadership">Leadership</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="admin-section">
+  <div class="container">
+    <div class="admin-head">
+      <h1>Admin Dashboard</h1>
+      <button class="admin-logout" id="logoutBtn">Log Out</button>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-cell"><div class="label">Total Visits</div><div class="value" id="statVisits">—</div></div>
+      <div class="stat-cell"><div class="label">Unique Visitors</div><div class="value" id="statUnique">—</div></div>
+      <div class="stat-cell"><div class="label">Quotation / WhatsApp Clicks</div><div class="value" id="statQuotes">—</div></div>
+      <div class="stat-cell"><div class="label">Add to Cart</div><div class="value" id="statCarts">—</div></div>
+    </div>
+
+    <div class="admin-panel">
+      <h2>By Product</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Product</th><th>Views</th><th>Quotation Clicks</th><th>Add to Cart</th></tr></thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <h2>Recent Activity</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>When</th><th>Event</th><th>Product</th><th>User</th></tr></thead>
+          <tbody id="activityTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<script src="assets/js/brand.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script>
+document.getElementById('favicon').href = LOGO_SRC;
+
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll', () => navEl && navEl.classList.toggle('scrolled', window.scrollY > 40));
+
+async function checkAdminAccess() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { location.href = 'account.html'; return false; }
+  const { data: profile, error } = await supabaseClient
+    .from('profiles').select('is_admin').eq('id', session.user.id).single();
+  if (error || !profile || !profile.is_admin) {
+    document.getElementById('gate').innerHTML = '<p>This page is for TICKORA admins only. <a href="index.html" style="color:var(--brass-light)">Back to the site</a>.</p>';
+    return false;
+  }
+  return true;
+}
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+
+async function loadDashboard() {
+  const [{ count: visitCount }, { count: quoteCount }, { count: cartCount }] = await Promise.all([
+    supabaseClient.from('events').select('*', { count: 'exact', head: true }).eq('event_type', 'page_view'),
+    supabaseClient.from('events').select('*', { count: 'exact', head: true }).eq('event_type', 'quotation_click'),
+    supabaseClient.from('events').select('*', { count: 'exact', head: true }).eq('event_type', 'add_to_cart'),
+  ]);
+  document.getElementById('statVisits').textContent = visitCount ?? 0;
+  document.getElementById('statQuotes').textContent = quoteCount ?? 0;
+  document.getElementById('statCarts').textContent = cartCount ?? 0;
+
+  const { data: sessionRows } = await supabaseClient
+    .from('events').select('session_id').eq('event_type', 'page_view').limit(5000);
+  const uniqueCount = new Set((sessionRows || []).map(r => r.session_id)).size;
+  document.getElementById('statUnique').textContent = uniqueCount;
+
+  const { data: productRows } = await supabaseClient
+    .from('events').select('event_type, product_name')
+    .in('event_type', ['product_view', 'quotation_click', 'add_to_cart'])
+    .not('product_name', 'is', null)
+    .limit(10000);
+
+  const byProduct = {};
+  (productRows || []).forEach(r => {
+    const name = r.product_name;
+    if (!byProduct[name]) byProduct[name] = { views: 0, quotes: 0, carts: 0 };
+    if (r.event_type === 'product_view') byProduct[name].views++;
+    if (r.event_type === 'quotation_click') byProduct[name].quotes++;
+    if (r.event_type === 'add_to_cart') byProduct[name].carts++;
+  });
+
+  const productBody = document.getElementById('productTableBody');
+  const names = Object.keys(byProduct);
+  if (names.length === 0) {
+    productBody.innerHTML = '<tr><td colspan="4" class="admin-empty">No product activity yet.</td></tr>';
+  } else {
+    names.sort((a, b) => (byProduct[b].quotes - byProduct[a].quotes));
+    productBody.innerHTML = names.map(name => `
+      <tr>
+        <td>${name}</td>
+        <td class="num">${byProduct[name].views}</td>
+        <td class="num">${byProduct[name].quotes}</td>
+        <td class="num">${byProduct[name].carts}</td>
+      </tr>`).join('');
+  }
+
+  const { data: recentRows } = await supabaseClient
+    .from('events').select('event_type, product_name, user_email, created_at')
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  const activityBody = document.getElementById('activityTableBody');
+  if (!recentRows || recentRows.length === 0) {
+    activityBody.innerHTML = '<tr><td colspan="4" class="admin-empty">No activity yet.</td></tr>';
+  } else {
+    activityBody.innerHTML = recentRows.map(r => `
+      <tr>
+        <td class="mono">${fmtDate(r.created_at)}</td>
+        <td>${r.event_type}</td>
+        <td>${r.product_name || '—'}</td>
+        <td>${r.user_email || 'Guest'}</td>
+      </tr>`).join('');
+  }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await supabaseClient.auth.signOut();
+  location.href = 'index.html';
+});
+
+(async () => {
+  const ok = await checkAdminAccess();
+  if (!ok) return;
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('adminContent').style.display = 'block';
+  document.getElementById('navLogoImg').src = LOGO_SRC;
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+  loadDashboard();
+})();
+</script>
+</body>
+</html>
