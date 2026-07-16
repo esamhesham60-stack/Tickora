@@ -112,7 +112,8 @@ nav.scrolled{
 }
 .tick{
   position:absolute; left:50%; top:50%; width:1px; height:7px; margin-left:-0.5px;
-  background:var(--bone-dim); transform:rotate(var(--tick-angle, 0deg)) translateY(calc(var(--size) / -2));
+  background:var(--bone-dim); transform-origin:50% 0;
+  transform:rotate(var(--tick-angle, 0deg)) translateY(calc(var(--size) / -2));
 }
 .tick.major{background:var(--brass-light); width:3px; height:14px; margin-left:-1.5px;}
 .hand{position:absolute; left:50%; top:50%; transform-origin:50% 100%; background:var(--bone); border-radius:2px;}
