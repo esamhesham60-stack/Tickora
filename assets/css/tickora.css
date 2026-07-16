@@ -110,9 +110,11 @@ nav.scrolled{
   border:2px solid var(--brass); box-shadow:0 0 0 8px rgba(20,24,29,0.6), 0 30px 60px rgba(0,0,0,0.5);
   flex-shrink:0;
 }
-.tick{position:absolute; left:50%; top:50%; background:var(--bone-dim); transform-origin:0 calc(var(--size) / 2);}
-.tick.major{background:var(--brass-light); width:3px; height:14px;}
-.tick.minor{width:1px; height:7px;}
+.tick{
+  position:absolute; left:50%; top:50%; width:1px; height:7px; margin-left:-0.5px;
+  background:var(--bone-dim); transform:rotate(var(--tick-angle, 0deg)) translateY(calc(var(--size) / -2));
+}
+.tick.major{background:var(--brass-light); width:3px; height:14px; margin-left:-1.5px;}
 .hand{position:absolute; left:50%; top:50%; transform-origin:50% 100%; background:var(--bone); border-radius:2px;}
 .hand-hour{width:6px; height:calc(var(--size) * 0.2529); margin-left:-3px; margin-top:calc(var(--size) * -0.2529); background:var(--brass-light);}
 .hand-min{width:4px; height:calc(var(--size) * 0.3529); margin-left:-2px; margin-top:calc(var(--size) * -0.3529); background:var(--bone);}

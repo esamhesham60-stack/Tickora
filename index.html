@@ -322,7 +322,7 @@ const watchFace = document.getElementById('watchFace');
 for(let i=0;i<60;i++){
   const t = document.createElement('div');
   t.className = 'tick ' + (i % 5 === 0 ? 'major' : 'minor');
-  t.style.transform = `rotate(${i*6}deg)`;
+  t.style.setProperty('--tick-angle', `${i*6}deg`);
   watchFace.appendChild(t);
 }
 const hourHand = document.getElementById('hourHand');
