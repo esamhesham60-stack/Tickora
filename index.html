@@ -342,10 +342,29 @@ tickClock();
 setInterval(tickClock, 1000);
 
 /* ---------- newsletter ---------- */
-document.getElementById('newsletterForm').addEventListener('submit', function(e){
+document.getElementById('newsletterForm').addEventListener('submit', async function(e){
   e.preventDefault();
-  document.getElementById('newsletterMsg').style.display = 'block';
-  document.getElementById('newsletterEmail').value = '';
+  const emailInput = document.getElementById('newsletterEmail');
+  const msgEl = document.getElementById('newsletterMsg');
+  const btn = e.target.querySelector('button[type="submit"]');
+  const email = emailInput.value.trim();
+  const originalBtnText = btn.textContent;
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  const { error } = await supabaseClient.from('subscribers').insert({ email });
+  btn.disabled = false;
+  btn.textContent = originalBtnText;
+
+  if (error && error.code !== '23505') {
+    msgEl.textContent = "Something went wrong — please try again.";
+    msgEl.style.color = '#e08a8a';
+  } else {
+    msgEl.textContent = "You're in — check your inbox for the code.";
+    msgEl.style.color = '';
+    emailInput.value = '';
+  }
+  msgEl.style.display = 'block';
 });
 </script>
 </body>

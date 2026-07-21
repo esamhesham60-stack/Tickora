@@ -79,3 +79,28 @@ create index events_type_idx on public.events (event_type);
 -- 1. Go sign up on the live site (account.html) with the email you want as admin.
 -- 2. Come back here and run, replacing the email:
 --    update public.profiles set is_admin = true where email = 'you@example.com';
+
+
+-- ==========================================================
+-- MIGRATION: newsletter subscribers
+-- If you already ran everything above, just run this part on its own
+-- (SQL Editor -> New query -> paste only what's below -> Run).
+-- ==========================================================
+
+create table public.subscribers (
+  id bigserial primary key,
+  email text not null unique,
+  created_at timestamptz not null default now()
+);
+
+alter table public.subscribers enable row level security;
+
+-- anyone can subscribe (the public newsletter form uses the anon key)
+create policy "Anyone can subscribe"
+  on public.subscribers for insert
+  with check (true);
+
+-- only admins can see the list
+create policy "Admins can view subscribers"
+  on public.subscribers for select
+  using (public.is_admin());

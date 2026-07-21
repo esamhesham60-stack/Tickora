@@ -74,6 +74,16 @@
     </div>
 
     <div class="admin-panel">
+      <h2>Newsletter Subscribers (<span id="subscriberCount">0</span>)</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Email</th><th>Subscribed</th></tr></thead>
+          <tbody id="subscriberTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-panel">
       <h2>By Product</h2>
       <div class="admin-table-wrap">
         <table class="admin-table">
@@ -182,6 +192,21 @@ async function loadDashboard() {
         <td>${r.event_type}</td>
         <td>${r.product_name || '—'}</td>
         <td>${r.user_email || 'Guest'}</td>
+      </tr>`).join('');
+  }
+
+  const { count: subscriberCount, data: subscriberRows } = await supabaseClient
+    .from('subscribers').select('email, created_at', { count: 'exact' })
+    .order('created_at', { ascending: false }).limit(200);
+  document.getElementById('subscriberCount').textContent = subscriberCount ?? 0;
+  const subscriberBody = document.getElementById('subscriberTableBody');
+  if (!subscriberRows || subscriberRows.length === 0) {
+    subscriberBody.innerHTML = '<tr><td colspan="2" class="admin-empty">No subscribers yet.</td></tr>';
+  } else {
+    subscriberBody.innerHTML = subscriberRows.map(r => `
+      <tr>
+        <td>${r.email}</td>
+        <td class="mono">${fmtDate(r.created_at)}</td>
       </tr>`).join('');
   }
 }
