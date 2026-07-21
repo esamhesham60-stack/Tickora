@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-i18n-page>
 <head>
+<script>(function(){try{var t=localStorage.getItem('tickora_theme');if(!t){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);var l=localStorage.getItem('tickora_lang')||'en';document.documentElement.setAttribute('lang',l);}catch(e){}})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TICKORA — Time, worn well.</title>
@@ -8,8 +9,8 @@
 <link rel="icon" type="image/png" id="favicon" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/tickora.css?v=4">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Cairo:wght@600;700&family=Tajawal:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/tickora.css?v=6">
 </head>
 <body>
 
@@ -30,7 +31,11 @@
       <a href="#shop" class="btn btn-primary">Shop Now</a>
     </div>
     <div class="nav-actions">
-      <a href="account.html" class="nav-account-link" id="navAccountLink">Login</a>
+      <a href="account.html" class="nav-account-link" id="navAccountLink">Login</a>      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+      <button class="lang-toggle" id="langToggle" aria-label="Toggle language">AR</button>
       <button class="cart-toggle" id="cartToggle" aria-label="Cart">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <span class="cart-badge" id="cartBadge" style="display:none">0</span>
@@ -226,6 +231,8 @@
 </footer>
 
 <script src="assets/js/brand.js?v=2"></script>
+<script src="assets/js/theme.js?v=1"></script>
+<script src="assets/js/i18n.js?v=3"></script>
 <script src="assets/js/products-data.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js?v=2"></script>
@@ -250,28 +257,37 @@ navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => na
 
 
 const shopGrid = document.getElementById('shopGrid');
-products.forEach(p => {
-  const card = document.createElement('div');
-  card.className = 'product-card';
-  card.innerHTML = `
-    <a class="product-media" href="product.html?id=${p.id}">
-      ${p.tag ? `<span class="product-tag">${p.tag}</span>` : ''}
-      <img src="${photos[p.id]}" alt="${p.name}" loading="lazy">
-    </a>
-    <div class="product-body">
-      <a class="product-link" href="product.html?id=${p.id}"><h3>${p.name}</h3></a>
-      <p>${p.desc}</p>
-      <div class="product-footer">
-        <span class="price mono">${p.price}</span>
-        <button class="add-btn" data-id="${p.id}">Add to cart</button>
-      </div>
-      <a class="quote-btn" data-id="${p.id}" href="${waLink(p.name)}" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413"/></svg>
-        Get a Quotation
+const quoteIconSvg = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413"/></svg>';
+
+function renderShopGrid() {
+  shopGrid.innerHTML = '';
+  products.forEach(p => {
+    const tag = pTag(p);
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <a class="product-media" href="product.html?id=${p.id}">
+        ${tag ? `<span class="product-tag">${tag}</span>` : ''}
+        <img src="${photos[p.id]}" alt="${pName(p)}" loading="lazy">
       </a>
-    </div>`;
-  shopGrid.appendChild(card);
-});
+      <div class="product-body">
+        <a class="product-link" href="product.html?id=${p.id}"><h3>${pName(p)}</h3></a>
+        <p>${pDesc(p)}</p>
+        <div class="product-footer">
+          <span class="price mono">${p.price}</span>
+          <button class="add-btn" data-id="${p.id}">${t('addToCart')}</button>
+        </div>
+        <a class="quote-btn" data-id="${p.id}" href="${waLink(pName(p))}" target="_blank" rel="noopener noreferrer">
+          ${quoteIconSvg}
+          ${t('getQuotation')}
+        </a>
+      </div>`;
+    shopGrid.appendChild(card);
+  });
+}
+renderShopGrid();
+document.addEventListener('tickora:langchange', renderShopGrid);
+
 shopGrid.addEventListener('click', e => {
   const addBtn = e.target.closest('.add-btn');
   if (addBtn) {
@@ -279,7 +295,7 @@ shopGrid.addEventListener('click', e => {
     addToCart(parseInt(addBtn.getAttribute('data-id'), 10));
     addBtn.classList.add('added');
     const original = addBtn.textContent;
-    addBtn.textContent = 'Added ✓';
+    addBtn.textContent = t('addedToCart');
     setTimeout(() => { addBtn.classList.remove('added'); addBtn.textContent = original; }, 2000);
     return;
   }
@@ -291,10 +307,10 @@ shopGrid.addEventListener('click', e => {
 });
 
 /* ---------- marquee ---------- */
-const specs = ['JAPANESE QUARTZ MOVEMENT','5ATM WATER RESISTANT','SAPPHIRE-COATED CRYSTAL','24-MONTH WARRANTY','FREE UAE SHIPPING'];
 const marqueeTrack = document.getElementById('marqueeTrack');
 function buildMarqueeSet(){
-  return specs.map(s => `<span>${s} <span style="color:var(--sage)">&#9679;</span></span>`).join('');
+  const items = t('marquee');
+  return items.map(s => `<span>${s} <span style="color:var(--sage)">&#9679;</span></span>`).join('');
 }
 marqueeTrack.innerHTML = buildMarqueeSet() + buildMarqueeSet();
 
@@ -351,17 +367,19 @@ document.getElementById('newsletterForm').addEventListener('submit', async funct
   const originalBtnText = btn.textContent;
 
   btn.disabled = true;
-  btn.textContent = 'Submitting...';
+  btn.textContent = getCurrentLang() === 'ar' ? 'جارٍ الإرسال...' : 'Submitting...';
   const { error } = await supabaseClient.from('subscribers').insert({ email });
   btn.disabled = false;
   btn.textContent = originalBtnText;
 
   if (error && error.code !== '23505') {
-    msgEl.textContent = "Something went wrong — please try again.";
+    msgEl.textContent = getCurrentLang() === 'ar' ? 'حدث خطأ ما — حاول مرة أخرى.' : 'Something went wrong — please try again.';
     msgEl.style.color = '#e08a8a';
+    msgEl.dataset.customMsg = '1';
   } else {
-    msgEl.textContent = "You're in — check your inbox for the code.";
+    msgEl.textContent = t('newsletterMsgDefault');
     msgEl.style.color = '';
+    delete msgEl.dataset.customMsg;
     emailInput.value = '';
   }
   msgEl.style.display = 'block';

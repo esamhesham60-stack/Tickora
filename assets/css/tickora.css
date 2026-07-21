@@ -1,13 +1,22 @@
-:root{
+:root, :root[data-theme="dark"]{
   --ink:#14181D; --panel:#1C232B; --panel-light:#232B34;
   --brass:#BC8A54; --brass-light:#D4A876; --sage:#7C9C87;
   --bone:#EDE6D8; --bone-dim:#8E8879;
   --border:rgba(237,230,216,0.1);
+  --shadow:rgba(0,0,0,0.5);
+}
+:root[data-theme="light"]{
+  --ink:#F6F2EA; --panel:#FFFFFF; --panel-light:#EFE8D8;
+  --brass:#9C6B34; --brass-light:#B8864A; --sage:#4F6B57;
+  --bone:#201C16; --bone-dim:#6B6255;
+  --border:rgba(32,28,22,0.12);
+  --shadow:rgba(32,28,22,0.15);
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html{scroll-behavior:smooth;}
 body{
   background:var(--ink); color:var(--bone);
+  transition:background-color .25s ease, color .25s ease;
   font-family:'Manrope',sans-serif; line-height:1.6;
   overflow-x:hidden;
 }
@@ -107,7 +116,7 @@ nav.scrolled{
 .watch-face{
   --size:340px; position:relative; width:var(--size); height:var(--size); border-radius:50%;
   background:radial-gradient(circle at 35% 30%, var(--panel-light), var(--panel) 70%);
-  border:2px solid var(--brass); box-shadow:0 0 0 8px rgba(20,24,29,0.6), 0 30px 60px rgba(0,0,0,0.5);
+  border:2px solid var(--brass); box-shadow:0 0 0 8px var(--shadow), 0 30px 60px var(--shadow);
   flex-shrink:0;
 }
 .tick{
@@ -310,6 +319,18 @@ footer{background:var(--panel); border-top:1px solid var(--border); padding-top:
   .footer-bottom{padding-bottom:calc(24px + env(safe-area-inset-bottom));}
 }
 
+/* ---------- THEME + LANGUAGE TOGGLES ---------- */
+.theme-toggle, .lang-toggle{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:40px; height:40px; background:none; border:1px solid var(--border); cursor:pointer;
+  color:var(--bone); transition:border-color .2s; font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;
+}
+.theme-toggle:hover, .lang-toggle:hover{border-color:var(--brass);}
+.theme-toggle svg{width:18px; height:18px;}
+.theme-toggle .icon-sun{display:none;}
+:root[data-theme="light"] .theme-toggle .icon-moon{display:none;}
+:root[data-theme="light"] .theme-toggle .icon-sun{display:block;}
+
 /* ---------- CART ---------- */
 .cart-toggle{
   position:relative; display:inline-flex; align-items:center; justify-content:center;
@@ -355,3 +376,19 @@ footer{background:var(--panel); border-top:1px solid var(--border); padding-top:
 .cart-drawer-foot{padding:20px 24px; border-top:1px solid var(--border);}
 .cart-total{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; font-family:'IBM Plex Mono',monospace; font-size:15px;}
 .cart-total .amt{color:var(--brass-light); font-size:17px;}
+
+/* ---------- ARABIC (translated pages only, see data-i18n-page) ---------- */
+html[lang="ar"][data-i18n-page] body{font-family:'Tajawal',sans-serif;}
+html[lang="ar"][data-i18n-page] h1,
+html[lang="ar"][data-i18n-page] h2,
+html[lang="ar"][data-i18n-page] h3,
+html[lang="ar"][data-i18n-page] h4{font-family:'Cairo',sans-serif;}
+html[lang="ar"][data-i18n-page] p,
+html[lang="ar"][data-i18n-page] li,
+html[lang="ar"][data-i18n-page] label,
+html[lang="ar"][data-i18n-page] h1,
+html[lang="ar"][data-i18n-page] h2,
+html[lang="ar"][data-i18n-page] h3,
+html[lang="ar"][data-i18n-page] h4{direction:rtl;}
+html[lang="ar"][data-i18n-page] .pull-quote{border-left:none; border-right:2px solid var(--brass); padding-left:0; padding-right:20px;}
+html[lang="ar"][data-i18n-page] .cred-row{direction:rtl;}

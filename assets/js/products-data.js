@@ -11,17 +11,30 @@ const photos = {
 };
 
 const products = [
-  {id:1, name:'Emerald Openheart', tag:'Best Seller', desc:'Green sunburst dial, open-heart movement, cognac leather.', price:'AED 349'},
-  {id:2, name:'Twilight Moonphase', tag:'', desc:'Two-tone case, moonphase complication, navy alligator strap.', price:'AED 389'},
-  {id:3, name:'Sapphire Moonphase', tag:'New', desc:'Steel-and-gold case, deep blue dial, moonphase sub-dial.', price:'AED 389'},
-  {id:4, name:'Emerald Moonphase', tag:'', desc:'Rose gold case, green dial, moonphase, brown leather.', price:'AED 399'},
-  {id:5, name:'Ocean Moonphase', tag:'Limited', desc:'Rose gold case, blue dial, moonphase, textured leather strap.', price:'AED 399'},
-  {id:6, name:'Ivory Classic', tag:'', desc:'Roman numeral dial, gold hands, brown leather, dress-watch build.', price:'AED 299'},
+  {id:1, name:'Emerald Openheart', tag:'Best Seller', desc:'Green sunburst dial, open-heart movement, cognac leather.', price:'AED 349',
+    name_ar:'زمردية القلب المفتوح', tag_ar:'الأكثر مبيعًا', desc_ar:'قرص أخضر متوهج، حركة القلب المفتوح، جلد كونياك.'},
+  {id:2, name:'Twilight Moonphase', tag:'', desc:'Two-tone case, moonphase complication, navy alligator strap.', price:'AED 389',
+    name_ar:'توايلايت مونفيز', tag_ar:'', desc_ar:'هيكل ثنائي اللون، ميزة طور القمر، سوار تمساح كحلي.'},
+  {id:3, name:'Sapphire Moonphase', tag:'New', desc:'Steel-and-gold case, deep blue dial, moonphase sub-dial.', price:'AED 389',
+    name_ar:'سفاير مونفيز', tag_ar:'جديد', desc_ar:'هيكل ستيل وذهبي، قرص أزرق داكن، لوحة فرعية لطور القمر.'},
+  {id:4, name:'Emerald Moonphase', tag:'', desc:'Rose gold case, green dial, moonphase, brown leather.', price:'AED 399',
+    name_ar:'إيميرالد مونفيز', tag_ar:'', desc_ar:'هيكل ذهبي وردي، قرص أخضر، طور القمر، جلد بني.'},
+  {id:5, name:'Ocean Moonphase', tag:'Limited', desc:'Rose gold case, blue dial, moonphase, textured leather strap.', price:'AED 399',
+    name_ar:'أوشن مونفيز', tag_ar:'إصدار محدود', desc_ar:'هيكل ذهبي وردي، قرص أزرق، طور القمر، سوار جلد منقوش.'},
+  {id:6, name:'Ivory Classic', tag:'', desc:'Roman numeral dial, gold hands, brown leather, dress-watch build.', price:'AED 299',
+    name_ar:'آيفوري كلاسيك', tag_ar:'', desc_ar:'قرص بأرقام رومانية، عقارب ذهبية، جلد بني، تصميم ساعة رسمية.'},
 ];
+
+function pName(p) { return (getCurrentLang() === 'ar' && p.name_ar) ? p.name_ar : p.name; }
+function pDesc(p) { return (getCurrentLang() === 'ar' && p.desc_ar) ? p.desc_ar : p.desc; }
+function pTag(p) { return (getCurrentLang() === 'ar' ? p.tag_ar : p.tag) || ''; }
 
 const WHATSAPP_NUMBER = '971568171463';
 function waLink(productName){
-  const msg = `Hi TICKORA, I'd like a quotation for the ${productName} watch.`;
+  const isAr = typeof getCurrentLang === 'function' && getCurrentLang() === 'ar';
+  const msg = isAr
+    ? `مرحبًا تيكورا، أرغب في الحصول على عرض سعر لساعة ${productName}.`
+    : `Hi TICKORA, I'd like a quotation for the ${productName} watch.`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 
