@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Cairo:wght@600;700&family=Tajawal:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/tickora.css?v=7">
+<link rel="stylesheet" href="assets/css/tickora.css?v=8">
 </head>
 <body>
 
@@ -232,13 +232,13 @@
 
 <script src="assets/js/brand.js?v=2"></script>
 <script src="assets/js/theme.js?v=1"></script>
-<script src="assets/js/i18n.js?v=3"></script>
-<script src="assets/js/products-data.js?v=2"></script>
+<script src="assets/js/i18n.js?v=4"></script>
+<script src="assets/js/products-data.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js?v=2"></script>
 <script src="assets/js/analytics.js?v=2"></script>
 <script src="assets/js/cart.js?v=2"></script>
-<script src="assets/js/nav-auth.js?v=2"></script>
+<script src="assets/js/nav-auth.js?v=3"></script>
 <script>
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 document.getElementById('favicon').href = LOGO_SRC;
@@ -263,11 +263,14 @@ function renderShopGrid() {
   shopGrid.innerHTML = '';
   products.forEach(p => {
     const tag = pTag(p);
+    const stockLabel = pStockLabel(p);
+    const outOfStock = p.stock === 'out';
     const card = document.createElement('div');
     card.className = 'product-card';
     card.innerHTML = `
       <a class="product-media" href="product.html?id=${p.id}">
         ${tag ? `<span class="product-tag">${tag}</span>` : ''}
+        ${stockLabel ? `<span class="stock-badge ${p.stock}">${stockLabel}</span>` : ''}
         <img src="${photos[p.id]}" alt="${pName(p)}" loading="lazy">
       </a>
       <div class="product-body">
@@ -275,7 +278,7 @@ function renderShopGrid() {
         <p>${pDesc(p)}</p>
         <div class="product-footer">
           <span class="price mono">${p.price}</span>
-          <button class="add-btn" data-id="${p.id}">${t('addToCart')}</button>
+          <button class="add-btn" data-id="${p.id}" ${outOfStock ? 'disabled' : ''}>${outOfStock ? stockLabel : t('addToCart')}</button>
         </div>
         <a class="quote-btn" data-id="${p.id}" href="${waLink(pName(p))}" target="_blank" rel="noopener noreferrer">
           ${quoteIconSvg}

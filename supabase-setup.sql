@@ -104,3 +104,14 @@ create policy "Anyone can subscribe"
 create policy "Admins can view subscribers"
   on public.subscribers for select
   using (public.is_admin());
+
+
+-- ==========================================================
+-- MIGRATION: customers can read their own activity
+-- Needed for the "My Account" page (order/quotation history).
+-- Run this on its own if you already ran everything above.
+-- ==========================================================
+
+create policy "Users can view own events"
+  on public.events for select
+  using (auth.uid() = user_id);

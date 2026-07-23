@@ -207,6 +207,16 @@ nav.scrolled{
   font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:500; letter-spacing:0.08em;
   padding:5px 10px; text-transform:uppercase;
 }
+.stock-badge{
+  position:absolute; top:14px; right:14px;
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:500; letter-spacing:0.08em;
+  padding:5px 10px; text-transform:uppercase;
+}
+.stock-badge.low{background:rgba(188,138,84,0.9); color:var(--ink);}
+.stock-badge.out{background:rgba(20,24,29,0.85); color:var(--bone-dim); border:1px solid var(--border);}
+.add-btn:disabled, .pd-add-btn:disabled{opacity:0.45; cursor:not-allowed;}
+.add-btn:disabled:hover, .pd-add-btn:disabled:hover{background:transparent; color:var(--brass-light);}
+.pd-add-btn:disabled:hover{background:var(--brass); color:var(--ink);}
 .product-body{padding:22px; display:flex; flex-direction:column; gap:6px; flex:1;}
 .product-body h3{font-size:19px;}
 .product-body p{color:var(--bone-dim); font-size:14px; flex:1;}

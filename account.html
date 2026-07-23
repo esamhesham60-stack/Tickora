@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Cairo:wght@600;700&family=Tajawal:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/tickora.css?v=7">
+<link rel="stylesheet" href="assets/css/tickora.css?v=8">
 <style>
 .auth-section{min-height:100vh; min-height:100svh; display:flex; align-items:center; padding:140px 0 60px;}
 .auth-card{max-width:420px; margin:0 auto; background:var(--panel); border:1px solid var(--border); padding:40px;}
@@ -27,6 +27,11 @@
 }
 .auth-field input:focus{outline:none; border-color:var(--brass);}
 .auth-submit{width:100%; margin-top:6px;}
+.auth-forgot{
+  display:block; width:100%; text-align:center; background:none; border:none; cursor:pointer;
+  color:var(--bone-dim); font-family:'IBM Plex Mono',monospace; font-size:12.5px; margin-top:14px; text-decoration:underline;
+}
+.auth-forgot:hover{color:var(--brass-light);}
 .auth-msg{margin-top:16px; font-size:13px; font-family:'IBM Plex Mono',monospace; padding:12px 14px; display:none;}
 .auth-msg.error{display:block; background:rgba(200,80,80,0.12); color:#e08a8a; border:1px solid rgba(200,80,80,0.3);}
 .auth-msg.success{display:block; background:rgba(124,156,135,0.12); color:var(--sage); border:1px solid rgba(124,156,135,0.3);}
@@ -85,8 +90,21 @@
           <input type="password" id="loginPassword" required autocomplete="current-password">
         </div>
         <button type="submit" class="btn btn-primary auth-submit">Log In</button>
+        <button type="button" class="auth-forgot" id="forgotPasswordBtn">Forgot password?</button>
         <div class="auth-msg" id="loginMsg"></div>
       </form>
+
+      <div class="auth-form" id="forgotForm">
+        <h2>Reset your password</h2>
+        <p class="sub">Enter your email and we'll send you a link to set a new password.</p>
+        <div class="auth-field">
+          <label for="forgotEmail">Email</label>
+          <input type="email" id="forgotEmail" required autocomplete="email">
+        </div>
+        <button type="button" class="btn btn-primary auth-submit" id="sendResetBtn">Send Reset Link</button>
+        <button type="button" class="auth-forgot" id="backToLoginBtn">&larr; Back to login</button>
+        <div class="auth-msg" id="forgotMsg"></div>
+      </div>
 
       <form class="auth-form" id="signupForm">
         <h2>Create your account</h2>
@@ -112,10 +130,10 @@
 
 <script src="assets/js/brand.js?v=2"></script>
 <script src="assets/js/theme.js?v=1"></script>
-<script src="assets/js/i18n.js?v=3"></script>
+<script src="assets/js/i18n.js?v=4"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js?v=2"></script>
-<script src="assets/js/products-data.js?v=2"></script>
+<script src="assets/js/products-data.js?v=3"></script>
 <script src="assets/js/analytics.js?v=2"></script>
 <script src="assets/js/cart.js?v=2"></script>
 <script>
@@ -136,10 +154,32 @@ const signupForm = document.getElementById('signupForm');
 tabLogin.addEventListener('click', () => {
   tabLogin.classList.add('active'); tabSignup.classList.remove('active');
   loginForm.classList.add('active'); signupForm.classList.remove('active');
+  forgotForm.classList.remove('active');
 });
 tabSignup.addEventListener('click', () => {
   tabSignup.classList.add('active'); tabLogin.classList.remove('active');
   signupForm.classList.add('active'); loginForm.classList.remove('active');
+  forgotForm.classList.remove('active');
+});
+
+const forgotForm = document.getElementById('forgotForm');
+document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
+  loginForm.classList.remove('active');
+  forgotForm.classList.add('active');
+});
+document.getElementById('backToLoginBtn').addEventListener('click', () => {
+  forgotForm.classList.remove('active');
+  loginForm.classList.add('active');
+});
+document.getElementById('sendResetBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('forgotMsg');
+  const email = document.getElementById('forgotEmail').value.trim();
+  if (!email) { showMsg(msg, t('msgEnterEmail'), 'error'); return; }
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: location.origin + '/reset-password.html'
+  });
+  if (error) { showMsg(msg, error.message, 'error'); return; }
+  showMsg(msg, t('msgResetSent'), 'success');
 });
 
 function showMsg(el, text, kind) {

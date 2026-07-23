@@ -6,7 +6,7 @@ const UI_TEXT = {
   en: {
     navShop: 'Shop', navReviews: 'Reviews', navStory: 'Story', navLeadership: 'Leadership',
     navDetails: 'Details', navContact: 'Contact', navShopNow: 'Shop Now',
-    navLogin: 'Login', navLogout: 'Logout', navAdmin: 'Admin Dashboard',
+    navLogin: 'Login', navMyAccount: 'My Account', navAdmin: 'Admin Dashboard',
 
     heroEyebrow: 'TICKORA — Everyday Watches',
     heroTitle: 'Time, worn <span class="accent">well.</span>',
@@ -75,6 +75,11 @@ const UI_TEXT = {
     msgLoggedIn: 'Logged in — redirecting...',
     msgAccountCreated: 'Account created — redirecting...',
     msgCheckEmail: 'Account created. Check your email to confirm, then log in.',
+    forgotLink: 'Forgot password?', forgotTitle: 'Reset your password',
+    forgotSub: "Enter your email and we'll send you a link to set a new password.",
+    forgotBtn: 'Send Reset Link', backToLogin: '← Back to login',
+    msgEnterEmail: 'Please enter your email.',
+    msgResetSent: "If that email has an account, we've sent a reset link.",
 
     cartTitle: 'Your Cart', cartEmpty: 'Your cart is empty.', cartRemove: 'Remove', cartTotal: 'Total',
     cartQuoteWa: 'Get a Quotation on WhatsApp',
@@ -82,7 +87,7 @@ const UI_TEXT = {
   ar: {
     navShop: 'المتجر', navReviews: 'التقييمات', navStory: 'قصتنا', navLeadership: 'القيادة',
     navDetails: 'التفاصيل', navContact: 'تواصل', navShopNow: 'تسوق الآن',
-    navLogin: 'تسجيل الدخول', navLogout: 'تسجيل الخروج', navAdmin: 'لوحة التحكم',
+    navLogin: 'تسجيل الدخول', navMyAccount: 'حسابي', navAdmin: 'لوحة التحكم',
 
     heroEyebrow: 'TICKORA — ساعات لكل يوم',
     heroTitle: 'الوقت، <span class="accent">بأناقة.</span>',
@@ -151,6 +156,11 @@ const UI_TEXT = {
     msgLoggedIn: 'تم تسجيل الدخول — جارٍ التحويل...',
     msgAccountCreated: 'تم إنشاء الحساب — جارٍ التحويل...',
     msgCheckEmail: 'تم إنشاء الحساب. تحقق من بريدك الإلكتروني للتأكيد، ثم سجّل الدخول.',
+    forgotLink: 'نسيت كلمة المرور؟', forgotTitle: 'إعادة تعيين كلمة المرور',
+    forgotSub: 'أدخل بريدك الإلكتروني وسنرسل لك رابطًا لتعيين كلمة مرور جديدة.',
+    forgotBtn: 'إرسال رابط إعادة التعيين', backToLogin: '← العودة لتسجيل الدخول',
+    msgEnterEmail: 'من فضلك أدخل بريدك الإلكتروني.',
+    msgResetSent: 'لو الإيميل ده مرتبط بحساب، بعتنالك رابط إعادة تعيين كلمة المرور.',
 
     cartTitle: 'سلتك', cartEmpty: 'سلتك فارغة.', cartRemove: 'إزالة', cartTotal: 'الإجمالي',
     cartQuoteWa: 'اطلب عرض سعر عبر واتساب',
@@ -269,6 +279,10 @@ const I18N_RULES = [
   ['#signupForm label[for="signupEmail"]', 'fieldEmail'],
   ['#signupForm label[for="signupPassword"]', 'fieldPassword'],
   ['#signupForm .auth-submit', 'btnSignup'],
+  ['#forgotPasswordBtn', 'forgotLink'],
+  ['#forgotForm h2', 'forgotTitle'], ['#forgotForm .sub', 'forgotSub'],
+  ['#forgotForm label[for="forgotEmail"]', 'fieldEmail'],
+  ['#sendResetBtn', 'forgotBtn'], ['#backToLoginBtn', 'backToLogin'],
 ];
 
 function applyTranslations() {
