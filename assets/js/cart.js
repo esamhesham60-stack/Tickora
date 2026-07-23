@@ -143,3 +143,6 @@ function initCart() {
 }
 
 document.addEventListener('DOMContentLoaded', initCart);
+if (typeof productsReady !== 'undefined') {
+  productsReady.then(() => { renderCartBadge(); renderCartDrawer(); });
+}

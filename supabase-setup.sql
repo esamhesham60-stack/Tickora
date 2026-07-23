@@ -115,3 +115,75 @@ create policy "Admins can view subscribers"
 create policy "Users can view own events"
   on public.events for select
   using (auth.uid() = user_id);
+
+
+-- ==========================================================
+-- MIGRATION: admin-managed product catalog
+-- Moves products out of code and into the database so the admin
+-- dashboard can add/edit/delete watches and update stock directly.
+-- Run this on its own if you already ran everything above.
+-- ==========================================================
+
+create table public.products (
+  id bigserial primary key,
+  name_en text not null,
+  name_ar text not null,
+  desc_en text not null,
+  desc_ar text not null,
+  tag_en text default '',
+  tag_ar text default '',
+  price numeric not null,
+  stock text not null default 'in' check (stock in ('in','low','out')),
+  photo_url text,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table public.products enable row level security;
+
+-- anyone can browse the catalog
+create policy "Anyone can view products"
+  on public.products for select
+  using (true);
+
+-- only admins can add/edit/delete
+create policy "Admins can insert products"
+  on public.products for insert
+  with check (public.is_admin());
+create policy "Admins can update products"
+  on public.products for update
+  using (public.is_admin());
+create policy "Admins can delete products"
+  on public.products for delete
+  using (public.is_admin());
+
+-- storage bucket for admin-uploaded product photos
+insert into storage.buckets (id, name, public)
+values ('product-photos', 'product-photos', true)
+on conflict (id) do nothing;
+
+create policy "Anyone can view product photos"
+  on storage.objects for select
+  using (bucket_id = 'product-photos');
+
+create policy "Admins can upload product photos"
+  on storage.objects for insert
+  with check (bucket_id = 'product-photos' and public.is_admin());
+
+create policy "Admins can update product photos"
+  on storage.objects for update
+  using (bucket_id = 'product-photos' and public.is_admin());
+
+create policy "Admins can delete product photos"
+  on storage.objects for delete
+  using (bucket_id = 'product-photos' and public.is_admin());
+
+-- seed the 6 existing watches (their photos come across as the same
+-- embedded images already in the site, so nothing looks different)
+insert into public.products (name_en, name_ar, desc_en, desc_ar, tag_en, tag_ar, price, stock, photo_url, sort_order) values
+('Emerald Openheart', 'زمردية القلب المفتوح', 'Green sunburst dial, open-heart movement, cognac leather.', 'قرص أخضر متوهج، حركة القلب المفتوح، جلد كونياك.', 'Best Seller', 'الأكثر مبيعًا', 349, 'in', 'assets/web/product-1.jpg', 1),
+('Twilight Moonphase', 'توايلايت مونفيز', 'Two-tone case, moonphase complication, navy alligator strap.', 'هيكل ثنائي اللون، ميزة طور القمر، سوار تمساح كحلي.', '', '', 389, 'in', 'assets/web/product-2.jpg', 2),
+('Sapphire Moonphase', 'سفاير مونفيز', 'Steel-and-gold case, deep blue dial, moonphase sub-dial.', 'هيكل ستيل وذهبي، قرص أزرق داكن، لوحة فرعية لطور القمر.', 'New', 'جديد', 389, 'in', 'assets/web/product-3.jpg', 3),
+('Emerald Moonphase', 'إيميرالد مونفيز', 'Rose gold case, green dial, moonphase, brown leather.', 'هيكل ذهبي وردي، قرص أخضر، طور القمر، جلد بني.', '', '', 399, 'in', 'assets/web/product-4.jpg', 4),
+('Ocean Moonphase', 'أوشن مونفيز', 'Rose gold case, blue dial, moonphase, textured leather strap.', 'هيكل ذهبي وردي، قرص أزرق، طور القمر، سوار جلد منقوش.', 'Limited', 'إصدار محدود', 399, 'low', 'assets/web/product-5.jpg', 5),
+('Ivory Classic', 'آيفوري كلاسيك', 'Roman numeral dial, gold hands, brown leather, dress-watch build.', 'قرص بأرقام رومانية، عقارب ذهبية، جلد بني، تصميم ساعة رسمية.', '', '', 299, 'in', 'assets/web/product-6.jpg', 6);

@@ -36,6 +36,44 @@
 .admin-gate p{color:var(--bone-dim); font-size:15px;}
 @media(max-width:900px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:560px){.stat-grid{grid-template-columns:1fr;}}
+
+.admin-panel-head{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px;}
+.admin-panel-head h2{margin-bottom:0;}
+.admin-add-btn{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink); background:var(--brass-light); border:none; padding:10px 18px; cursor:pointer; transition:opacity .2s;}
+.admin-add-btn:hover{opacity:0.85;}
+.admin-thumb{width:44px; height:44px; object-fit:cover; border:1px solid var(--border); background:var(--panel-light); display:block;}
+.admin-row-btn{font-family:'IBM Plex Mono',monospace; font-size:11.5px; background:none; border:1px solid var(--border); color:var(--bone-dim); padding:6px 12px; cursor:pointer; transition:all .2s; margin-right:6px;}
+.admin-row-btn:hover{border-color:var(--brass); color:var(--brass-light);}
+.admin-row-btn.danger:hover{border-color:#c85050; color:#e08a8a;}
+.stock-pill{font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 9px; text-transform:uppercase; letter-spacing:0.04em;}
+.stock-pill.in{color:var(--sage);}
+.stock-pill.low{color:#d0a35c;}
+.stock-pill.out{color:#e08a8a;}
+
+.pf-backdrop{position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:200; display:none;}
+.pf-backdrop.open{display:block;}
+.pf-modal{position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:min(640px,92vw); max-height:88vh; overflow-y:auto; background:var(--panel); border:1px solid var(--border); z-index:201; padding:32px; display:none;}
+.pf-modal.open{display:block;}
+.pf-modal h3{font-size:19px; margin-bottom:22px;}
+.pf-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.pf-field{margin-bottom:16px;}
+.pf-field.full{grid-column:1 / -1;}
+.pf-field label{display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.04em; text-transform:uppercase; color:var(--bone-dim); margin-bottom:7px;}
+.pf-field input, .pf-field textarea, .pf-field select{
+  width:100%; background:var(--ink); border:1px solid var(--border); color:var(--bone);
+  padding:11px 13px; font-family:'Manrope',sans-serif; font-size:13.5px;
+}
+.pf-field textarea{resize:vertical; min-height:64px;}
+.pf-field input:focus, .pf-field textarea:focus, .pf-field select:focus{outline:none; border-color:var(--brass);}
+.pf-photo-preview{width:88px; height:88px; object-fit:cover; border:1px solid var(--border); background:var(--panel-light); margin-bottom:10px; display:block;}
+.pf-actions{display:flex; gap:12px; margin-top:8px;}
+.pf-actions .btn{flex:1;}
+.pf-cancel{flex:1; font-family:'IBM Plex Mono',monospace; font-size:13px; background:none; border:1px solid var(--border); color:var(--bone-dim); cursor:pointer;}
+.pf-cancel:hover{border-color:var(--brass); color:var(--brass-light);}
+.pf-msg{margin-top:14px; font-size:13px; font-family:'IBM Plex Mono',monospace; padding:11px 13px; display:none;}
+.pf-msg.error{display:block; background:rgba(200,80,80,0.12); color:#e08a8a; border:1px solid rgba(200,80,80,0.3);}
+.pf-msg.success{display:block; background:rgba(124,156,135,0.12); color:var(--sage); border:1px solid rgba(124,156,135,0.3);}
+@media(max-width:560px){.pf-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -80,6 +118,19 @@
     </div>
 
     <div class="admin-panel">
+      <div class="admin-panel-head">
+        <h2>Manage Products (<span id="productCount">0</span>)</h2>
+        <button class="admin-add-btn" id="addProductBtn">+ Add Product</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th></th><th>Name</th><th>Price</th><th>Stock</th><th>Order</th><th></th></tr></thead>
+          <tbody id="manageProductsBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-panel">
       <h2>Newsletter Subscribers (<span id="subscriberCount">0</span>)</h2>
       <div class="admin-table-wrap">
         <table class="admin-table">
@@ -110,6 +161,43 @@
     </div>
   </div>
 </section>
+</div>
+
+<div class="pf-backdrop" id="pfBackdrop"></div>
+<div class="pf-modal" id="pfModal">
+  <h3 id="pfTitle">Add Product</h3>
+  <form id="productForm">
+    <input type="hidden" id="pfId">
+    <div class="pf-field">
+      <label>Photo</label>
+      <img id="pfPhotoPreview" class="pf-photo-preview" src="" alt="" style="display:none;">
+      <input type="file" id="pfPhotoFile" accept="image/*">
+      <input type="hidden" id="pfPhotoUrl">
+    </div>
+    <div class="pf-grid">
+      <div class="pf-field"><label>Name (English)</label><input type="text" id="pfNameEn" required></div>
+      <div class="pf-field"><label>Name (Arabic)</label><input type="text" id="pfNameAr" required></div>
+      <div class="pf-field full"><label>Description (English)</label><textarea id="pfDescEn" required></textarea></div>
+      <div class="pf-field full"><label>Description (Arabic)</label><textarea id="pfDescAr" required></textarea></div>
+      <div class="pf-field"><label>Tag (English) — optional</label><input type="text" id="pfTagEn" placeholder="e.g. New"></div>
+      <div class="pf-field"><label>Tag (Arabic) — optional</label><input type="text" id="pfTagAr" placeholder="مثال: جديد"></div>
+      <div class="pf-field"><label>Price (AED)</label><input type="number" id="pfPrice" min="0" step="1" required></div>
+      <div class="pf-field">
+        <label>Stock Status</label>
+        <select id="pfStock">
+          <option value="in">In Stock</option>
+          <option value="low">Only a Few Left</option>
+          <option value="out">Sold Out</option>
+        </select>
+      </div>
+      <div class="pf-field"><label>Sort Order</label><input type="number" id="pfSortOrder" min="0" step="1" value="0"></div>
+    </div>
+    <div class="pf-actions">
+      <button type="button" class="pf-cancel" id="pfCancelBtn">Cancel</button>
+      <button type="submit" class="btn btn-primary" id="pfSaveBtn">Save Product</button>
+    </div>
+    <div class="pf-msg" id="pfMsg"></div>
+  </form>
 </div>
 
 <script src="assets/js/brand.js?v=2"></script>
@@ -219,6 +307,145 @@ async function loadDashboard() {
   }
 }
 
+function stockLabelFor(stock) {
+  if (stock === 'out') return 'Sold Out';
+  if (stock === 'low') return 'Only a Few Left';
+  return 'In Stock';
+}
+
+async function loadManageProducts() {
+  const { data, error } = await supabaseClient
+    .from('products').select('*').order('sort_order', { ascending: true });
+  const body = document.getElementById('manageProductsBody');
+  document.getElementById('productCount').textContent = (data || []).length;
+  if (error || !data || data.length === 0) {
+    body.innerHTML = '<tr><td colspan="6" class="admin-empty">No products yet.</td></tr>';
+    return;
+  }
+  body.innerHTML = data.map(p => `
+    <tr>
+      <td><img class="admin-thumb" src="${p.photo_url || ''}" alt=""></td>
+      <td>${p.name_en}</td>
+      <td class="num">AED ${p.price}</td>
+      <td><span class="stock-pill ${p.stock}">${stockLabelFor(p.stock)}</span></td>
+      <td class="num">${p.sort_order}</td>
+      <td>
+        <button type="button" class="admin-row-btn" data-edit-id="${p.id}">Edit</button>
+        <button type="button" class="admin-row-btn danger" data-delete-id="${p.id}">Delete</button>
+      </td>
+    </tr>`).join('');
+  window._tickoraProducts = data;
+}
+
+const pfBackdrop = document.getElementById('pfBackdrop');
+const pfModal = document.getElementById('pfModal');
+const productForm = document.getElementById('productForm');
+const pfMsg = document.getElementById('pfMsg');
+
+function openProductForm(product) {
+  productForm.reset();
+  pfMsg.className = 'pf-msg';
+  pfMsg.textContent = '';
+  document.getElementById('pfId').value = product ? product.id : '';
+  document.getElementById('pfTitle').textContent = product ? 'Edit Product' : 'Add Product';
+  document.getElementById('pfNameEn').value = product ? product.name_en : '';
+  document.getElementById('pfNameAr').value = product ? product.name_ar : '';
+  document.getElementById('pfDescEn').value = product ? product.desc_en : '';
+  document.getElementById('pfDescAr').value = product ? product.desc_ar : '';
+  document.getElementById('pfTagEn').value = product ? (product.tag_en || '') : '';
+  document.getElementById('pfTagAr').value = product ? (product.tag_ar || '') : '';
+  document.getElementById('pfPrice').value = product ? product.price : '';
+  document.getElementById('pfStock').value = product ? product.stock : 'in';
+  document.getElementById('pfSortOrder').value = product ? product.sort_order : 0;
+  document.getElementById('pfPhotoUrl').value = product ? (product.photo_url || '') : '';
+  const preview = document.getElementById('pfPhotoPreview');
+  if (product && product.photo_url) {
+    preview.src = product.photo_url;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+  pfBackdrop.classList.add('open');
+  pfModal.classList.add('open');
+}
+
+function closeProductForm() {
+  pfBackdrop.classList.remove('open');
+  pfModal.classList.remove('open');
+}
+
+document.getElementById('addProductBtn').addEventListener('click', () => openProductForm(null));
+document.getElementById('pfCancelBtn').addEventListener('click', closeProductForm);
+pfBackdrop.addEventListener('click', closeProductForm);
+
+document.getElementById('pfPhotoFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  pfMsg.className = 'pf-msg';
+  const preview = document.getElementById('pfPhotoPreview');
+  const path = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
+  const { error } = await supabaseClient.storage.from('product-photos').upload(path, file);
+  if (error) {
+    pfMsg.textContent = 'Photo upload failed: ' + error.message;
+    pfMsg.className = 'pf-msg error';
+    return;
+  }
+  const { data: pub } = supabaseClient.storage.from('product-photos').getPublicUrl(path);
+  document.getElementById('pfPhotoUrl').value = pub.publicUrl;
+  preview.src = pub.publicUrl;
+  preview.style.display = 'block';
+});
+
+productForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('pfId').value;
+  const photoUrl = document.getElementById('pfPhotoUrl').value;
+  if (!photoUrl) {
+    pfMsg.textContent = 'Please upload a photo.';
+    pfMsg.className = 'pf-msg error';
+    return;
+  }
+  const row = {
+    name_en: document.getElementById('pfNameEn').value.trim(),
+    name_ar: document.getElementById('pfNameAr').value.trim(),
+    desc_en: document.getElementById('pfDescEn').value.trim(),
+    desc_ar: document.getElementById('pfDescAr').value.trim(),
+    tag_en: document.getElementById('pfTagEn').value.trim(),
+    tag_ar: document.getElementById('pfTagAr').value.trim(),
+    price: parseFloat(document.getElementById('pfPrice').value),
+    stock: document.getElementById('pfStock').value,
+    sort_order: parseInt(document.getElementById('pfSortOrder').value, 10) || 0,
+    photo_url: photoUrl,
+  };
+  const saveBtn = document.getElementById('pfSaveBtn');
+  saveBtn.disabled = true;
+  const { error } = id
+    ? await supabaseClient.from('products').update(row).eq('id', id)
+    : await supabaseClient.from('products').insert(row);
+  saveBtn.disabled = false;
+  if (error) {
+    pfMsg.textContent = 'Save failed: ' + error.message;
+    pfMsg.className = 'pf-msg error';
+    return;
+  }
+  closeProductForm();
+  loadManageProducts();
+});
+
+document.getElementById('manageProductsBody').addEventListener('click', async (e) => {
+  const editId = e.target.getAttribute('data-edit-id');
+  const deleteId = e.target.getAttribute('data-delete-id');
+  if (editId) {
+    const product = (window._tickoraProducts || []).find(p => String(p.id) === editId);
+    if (product) openProductForm(product);
+  } else if (deleteId) {
+    if (!confirm('Delete this product? This cannot be undone.')) return;
+    const { error } = await supabaseClient.from('products').delete().eq('id', deleteId);
+    if (error) { alert('Delete failed: ' + error.message); return; }
+    loadManageProducts();
+  }
+});
+
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   await supabaseClient.auth.signOut();
   location.href = 'index.html';
@@ -234,6 +461,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   const navLinks = document.getElementById('navLinks');
   hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
   loadDashboard();
+  loadManageProducts();
 })();
 </script>
 </body>
