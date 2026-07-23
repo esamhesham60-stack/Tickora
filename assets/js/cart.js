@@ -37,8 +37,21 @@ async function addToCart(productId) {
   }
 }
 
-function removeFromCart(productId) {
-  saveCart(getCart().filter(l => l.id !== productId));
+async function removeFromCart(productId) {
+  const cart = getCart();
+  const line = cart.find(l => l.id === productId);
+  saveCart(cart.filter(l => l.id !== productId));
+  if (line && typeof supabaseClient !== 'undefined') {
+    const { error } = await supabaseClient.rpc('increment_stock', { p_product_id: productId, p_qty: line.qty });
+    if (!error) {
+      const product = PRODUCTS.find(p => p.id === productId);
+      if (product) {
+        product.stockQty += line.qty;
+        product.stock = product.stockQty <= 0 ? 'out' : product.stockQty <= 3 ? 'low' : 'in';
+        document.dispatchEvent(new Event('tickora:stockchange'));
+      }
+    }
+  }
 }
 
 function cartCount() {

@@ -46,7 +46,7 @@ function pStockLabel(p) {
   return '';
 }
 function pStockCount(p) {
-  if (p.stock !== 'in') return '';
+  if (p.stock === 'out') return '';
   const isAr = typeof getCurrentLang === 'function' && getCurrentLang() === 'ar';
   return isAr ? `${p.stockQty} قطعة متوفرة` : `${p.stockQty} in stock`;
 }

@@ -227,3 +227,30 @@ as $$
 $$;
 
 grant execute on function public.decrement_stock(bigint) to anon, authenticated;
+
+
+-- ==========================================================
+-- MIGRATION: restore stock when a cart line is removed
+-- Add-to-cart takes stock off the shelf immediately (see above); if a
+-- shopper removes it again before checking out via WhatsApp, this puts
+-- it back so browsing the cart doesn't permanently drain inventory.
+-- Run this on its own if you already ran everything above.
+-- ==========================================================
+
+create or replace function public.increment_stock(p_product_id bigint, p_qty int default 1)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.products
+  set stock_qty = stock_qty + p_qty,
+      stock = case
+        when stock_qty + p_qty <= 0 then 'out'
+        when stock_qty + p_qty <= 3 then 'low'
+        else 'in'
+      end
+  where id = p_product_id;
+$$;
+
+grant execute on function public.increment_stock(bigint, int) to anon, authenticated;
