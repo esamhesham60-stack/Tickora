@@ -187,3 +187,43 @@ insert into public.products (name_en, name_ar, desc_en, desc_ar, tag_en, tag_ar,
 ('Emerald Moonphase', 'إيميرالد مونفيز', 'Rose gold case, green dial, moonphase, brown leather.', 'هيكل ذهبي وردي، قرص أخضر، طور القمر، جلد بني.', '', '', 399, 'in', 'assets/web/product-4.jpg', 4),
 ('Ocean Moonphase', 'أوشن مونفيز', 'Rose gold case, blue dial, moonphase, textured leather strap.', 'هيكل ذهبي وردي، قرص أزرق، طور القمر، سوار جلد منقوش.', 'Limited', 'إصدار محدود', 399, 'low', 'assets/web/product-5.jpg', 5),
 ('Ivory Classic', 'آيفوري كلاسيك', 'Roman numeral dial, gold hands, brown leather, dress-watch build.', 'قرص بأرقام رومانية، عقارب ذهبية، جلد بني، تصميم ساعة رسمية.', '', '', 299, 'in', 'assets/web/product-6.jpg', 6);
+
+
+-- ==========================================================
+-- MIGRATION: numeric stock quantity + atomic decrement on add-to-cart
+-- Admins now type an actual count instead of picking in/low/out; the
+-- badge status (in/low/out) is derived from that number automatically.
+-- Run this on its own if you already ran everything above.
+-- ==========================================================
+
+alter table public.products add column if not exists stock_qty integer not null default 0;
+
+-- backfill existing rows from their current badge status (only touches
+-- rows still at the default 0, so re-running this is safe)
+update public.products set stock_qty = case stock
+  when 'out' then 0
+  when 'low' then 3
+  else 20
+end
+where stock_qty = 0;
+
+-- atomically take one unit off the shelf; runs as the table owner so a
+-- plain customer can call it without needing broad update rights on
+-- the products table, and the WHERE guard stops it going negative
+create or replace function public.decrement_stock(p_product_id bigint)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.products
+  set stock_qty = stock_qty - 1,
+      stock = case
+        when stock_qty - 1 <= 0 then 'out'
+        when stock_qty - 1 <= 3 then 'low'
+        else 'in'
+      end
+  where id = p_product_id and stock_qty > 0;
+$$;
+
+grant execute on function public.decrement_stock(bigint) to anon, authenticated;

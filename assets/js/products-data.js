@@ -24,6 +24,7 @@ async function loadProducts() {
         tag: row.tag_en || '', tag_ar: row.tag_ar || '',
         price: `AED ${row.price}`,
         stock: row.stock,
+        stockQty: row.stock_qty || 0,
       });
       photos[row.id] = row.photo_url;
     });
@@ -41,8 +42,13 @@ function pTag(p) { return (getCurrentLang() === 'ar' ? p.tag_ar : p.tag) || ''; 
 function pStockLabel(p) {
   const isAr = typeof getCurrentLang === 'function' && getCurrentLang() === 'ar';
   if (p.stock === 'out') return isAr ? 'نفذ من المخزون' : 'Sold Out';
-  if (p.stock === 'low') return isAr ? 'كمية محدودة' : 'Only a Few Left';
+  if (p.stock === 'low') return isAr ? `متبقي ${p.stockQty} فقط` : `Only ${p.stockQty} Left`;
   return '';
+}
+function pStockCount(p) {
+  if (p.stock !== 'in') return '';
+  const isAr = typeof getCurrentLang === 'function' && getCurrentLang() === 'ar';
+  return isAr ? `${p.stockQty} قطعة متوفرة` : `${p.stockQty} in stock`;
 }
 
 const WHATSAPP_NUMBER = '971568171463';

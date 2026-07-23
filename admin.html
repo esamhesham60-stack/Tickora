@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/tickora.css?v=8">
+<link rel="stylesheet" href="assets/css/tickora.css?v=9">
 <style>
 .admin-section{padding:150px 0 100px;}
 .admin-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; flex-wrap:wrap; gap:16px;}
@@ -183,12 +183,8 @@
       <div class="pf-field"><label>Tag (Arabic) — optional</label><input type="text" id="pfTagAr" placeholder="مثال: جديد"></div>
       <div class="pf-field"><label>Price (AED)</label><input type="number" id="pfPrice" min="0" step="1" required></div>
       <div class="pf-field">
-        <label>Stock Status</label>
-        <select id="pfStock">
-          <option value="in">In Stock</option>
-          <option value="low">Only a Few Left</option>
-          <option value="out">Sold Out</option>
-        </select>
+        <label>Stock Quantity</label>
+        <input type="number" id="pfStockQty" min="0" step="1" required>
       </div>
       <div class="pf-field"><label>Sort Order</label><input type="number" id="pfSortOrder" min="0" step="1" value="0"></div>
     </div>
@@ -313,6 +309,12 @@ function stockLabelFor(stock) {
   return 'In Stock';
 }
 
+function deriveStockStatus(qty) {
+  if (qty <= 0) return 'out';
+  if (qty <= 3) return 'low';
+  return 'in';
+}
+
 async function loadManageProducts() {
   const { data, error } = await supabaseClient
     .from('products').select('*').order('sort_order', { ascending: true });
@@ -327,7 +329,7 @@ async function loadManageProducts() {
       <td><img class="admin-thumb" src="${p.photo_url || ''}" alt=""></td>
       <td>${p.name_en}</td>
       <td class="num">AED ${p.price}</td>
-      <td><span class="stock-pill ${p.stock}">${stockLabelFor(p.stock)}</span></td>
+      <td><span class="stock-pill ${p.stock}">${p.stock_qty} — ${stockLabelFor(p.stock)}</span></td>
       <td class="num">${p.sort_order}</td>
       <td>
         <button type="button" class="admin-row-btn" data-edit-id="${p.id}">Edit</button>
@@ -355,7 +357,7 @@ function openProductForm(product) {
   document.getElementById('pfTagEn').value = product ? (product.tag_en || '') : '';
   document.getElementById('pfTagAr').value = product ? (product.tag_ar || '') : '';
   document.getElementById('pfPrice').value = product ? product.price : '';
-  document.getElementById('pfStock').value = product ? product.stock : 'in';
+  document.getElementById('pfStockQty').value = product ? product.stock_qty : 0;
   document.getElementById('pfSortOrder').value = product ? product.sort_order : 0;
   document.getElementById('pfPhotoUrl').value = product ? (product.photo_url || '') : '';
   const preview = document.getElementById('pfPhotoPreview');
@@ -405,6 +407,7 @@ productForm.addEventListener('submit', async (e) => {
     pfMsg.className = 'pf-msg error';
     return;
   }
+  const stockQty = parseInt(document.getElementById('pfStockQty').value, 10) || 0;
   const row = {
     name_en: document.getElementById('pfNameEn').value.trim(),
     name_ar: document.getElementById('pfNameAr').value.trim(),
@@ -413,7 +416,8 @@ productForm.addEventListener('submit', async (e) => {
     tag_en: document.getElementById('pfTagEn').value.trim(),
     tag_ar: document.getElementById('pfTagAr').value.trim(),
     price: parseFloat(document.getElementById('pfPrice').value),
-    stock: document.getElementById('pfStock').value,
+    stock_qty: stockQty,
+    stock: deriveStockStatus(stockQty),
     sort_order: parseInt(document.getElementById('pfSortOrder').value, 10) || 0,
     photo_url: photoUrl,
   };

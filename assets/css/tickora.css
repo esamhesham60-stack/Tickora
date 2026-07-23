@@ -214,6 +214,8 @@ nav.scrolled{
 }
 .stock-badge.low{background:rgba(188,138,84,0.9); color:var(--ink);}
 .stock-badge.out{background:rgba(20,24,29,0.85); color:var(--bone-dim); border:1px solid var(--border);}
+.stock-count{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--bone-dim); margin-top:6px;}
+.pd-stock-count{font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--bone-dim); margin-top:8px;}
 .add-btn:disabled, .pd-add-btn:disabled{opacity:0.45; cursor:not-allowed;}
 .add-btn:disabled:hover, .pd-add-btn:disabled:hover{background:transparent; color:var(--brass-light);}
 .pd-add-btn:disabled:hover{background:var(--brass); color:var(--ink);}

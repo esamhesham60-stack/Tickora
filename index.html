@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Cairo:wght@600;700&family=Tajawal:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/tickora.css?v=8">
+<link rel="stylesheet" href="assets/css/tickora.css?v=9">
 </head>
 <body>
 
@@ -235,9 +235,9 @@
 <script src="assets/js/i18n.js?v=4"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-client.js?v=2"></script>
-<script src="assets/js/products-data.js?v=4"></script>
+<script src="assets/js/products-data.js?v=5"></script>
 <script src="assets/js/analytics.js?v=2"></script>
-<script src="assets/js/cart.js?v=2"></script>
+<script src="assets/js/cart.js?v=3"></script>
 <script src="assets/js/nav-auth.js?v=3"></script>
 <script>
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -280,6 +280,7 @@ function renderShopGrid() {
           <span class="price mono">${p.price}</span>
           <button class="add-btn" data-id="${p.id}" ${outOfStock ? 'disabled' : ''}>${outOfStock ? stockLabel : t('addToCart')}</button>
         </div>
+        ${pStockCount(p) ? `<div class="stock-count">${pStockCount(p)}</div>` : ''}
         <a class="quote-btn" data-id="${p.id}" href="${waLink(pName(p))}" target="_blank" rel="noopener noreferrer">
           ${quoteIconSvg}
           ${t('getQuotation')}
@@ -290,6 +291,7 @@ function renderShopGrid() {
 }
 productsReady.then(renderShopGrid);
 document.addEventListener('tickora:langchange', renderShopGrid);
+document.addEventListener('tickora:stockchange', renderShopGrid);
 
 shopGrid.addEventListener('click', e => {
   const addBtn = e.target.closest('.add-btn');
